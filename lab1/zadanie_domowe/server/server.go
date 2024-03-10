@@ -40,6 +40,7 @@ func (s *Server) Start() error {
 	go s.acceptLoop()
 
 	<-s.quitch
+
 	return nil
 }
 
@@ -54,7 +55,7 @@ func (s *Server) acceptLoop() {
 		}
 		// for each connection there is new go routine (thread)
 		s.connMap.Store(conn.RemoteAddr(), conn)
-		fmt.Println("New connection to the server! Connections address: ", conn.RemoteAddr())
+		fmt.Println("New connection to the server! Connection address: ", conn.RemoteAddr())
 		go s.readLoop(conn)
 	}
 }
@@ -71,23 +72,26 @@ func (s *Server) readLoop(conn net.Conn) {
 		n, err := conn.Read(buff)
 		if err != nil {
 			if err == io.EOF {
-				fmt.Println("Got EOF, finished receiving message from client: ", conn.RemoteAddr())
+				fmt.Printf("Connection with client: %s closed...\n", conn.RemoteAddr())
+				s.connMap.Delete(conn.RemoteAddr())
 				break
 			}
-			fmt.Println("Error during read: ", err)
 			continue
 		}
-		// buffer the thing we read not actually the whole buffer
+		//buffer the thing we read not actually the whole buffer
 		msg := buff[:n]
-		s.sendAll(msg)
-		fmt.Println(string(msg))
+		fmt.Printf("From %s\n", msg)
+		s.sendAll(msg, conn.RemoteAddr())
 	}
 }
 
-func (s *Server) sendAll(msg []byte) {
+func (s *Server) sendAll(msg []byte, senderAddress net.Addr) {
 	s.connMap.Range(func(key, value interface{}) bool {
 		if conn, ok := value.(net.Conn); ok {
-			conn.Write(msg)
+			if conn.RemoteAddr() != senderAddress {
+				fmt.Println("Sending to: ", conn.RemoteAddr())
+				conn.Write(msg)
+			}
 		}
 		return true
 	})
