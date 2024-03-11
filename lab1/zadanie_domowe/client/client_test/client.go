@@ -14,15 +14,13 @@ type Client struct {
 	connUDP      *net.UDPConn
 	hostName     string
 	serverAddr   string
-	portAddr     string
 	quitch       chan os.Signal
 	serverClosed chan struct{}
 }
 
-func NewClient(hostname, portAddr, serverAddr string) *Client {
+func NewClient(hostname, serverAddr string) *Client {
 	return &Client{
 		hostName:     hostname,
-		portAddr:     portAddr,
 		serverAddr:   serverAddr,
 		quitch:       make(chan os.Signal, 1),
 		serverClosed: make(chan struct{}),
@@ -129,19 +127,19 @@ func (c *Client) receiveTCPMsg() error {
 func (c *Client) receiveUDPMsg() error {
 	for {
 		select {
-		case <-c.quitch:
+		case <-c.serverClosed:
 			return nil
 		default:
 			buff := make([]byte, 2048)
-			//conn, _ := c.createUDPConn(c.serverAddr)
 			n, _, err := c.connUDP.ReadFromUDP(buff)
-			fmt.Println("essa")
 			if err != nil {
-				fmt.Println("Error during receiving UDP message: ", err)
+				if err == io.EOF {
+					return err
+				}
 				continue
 			}
 			msg := buff[:n]
-			fmt.Printf("From %s\n", msg)
+			fmt.Println(string(msg))
 		}
 	}
 }
@@ -165,8 +163,6 @@ func (c *Client) sendUDP() error {
 			return
 		}
 	}(conn)
-
-	fmt.Println(conn.LocalAddr())
 
 	asciiArt := "    /\\_____/\\\n   /  o   o  \\\n  ( ==  ^  == )\n   )         (\n  (           )\n ( (  )   (  ) )\n(__(__)___(__)__)"
 	_, err = conn.Write([]byte(asciiArt))

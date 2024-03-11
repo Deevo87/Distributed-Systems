@@ -85,7 +85,6 @@ func (s *Server) readUDPLoop() error {
 		fmt.Println("New UDP message to the server! Sender address: ", addr)
 		msg := buff[:n]
 		fmt.Println(string(msg))
-		fmt.Println(addr)
 		s.sendAllUDP(msg, addr.String())
 	}
 }
