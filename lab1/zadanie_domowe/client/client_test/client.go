@@ -10,7 +10,8 @@ import (
 )
 
 type Client struct {
-	conn         net.Conn
+	connTCP      net.Conn
+	connUDP      *net.UDPConn
 	hostName     string
 	serverAddr   string
 	portAddr     string
@@ -34,13 +35,28 @@ func (c *Client) Start() error {
 	if err != nil {
 		fmt.Println("Error occurred during client start: ", err)
 	}
-	c.conn = conn
+	c.connTCP = conn
 	defer func(conn net.Conn) {
 		err := conn.Close()
 		if err != nil {
 			fmt.Println("Error during closing connection: ", conn.RemoteAddr(), err)
 		}
-	}(c.conn)
+	}(c.connTCP)
+
+	udpEndpoint, _ := net.ResolveUDPAddr("udp", c.connTCP.LocalAddr().String())
+
+	udpLn, err := net.ListenUDP("udp", udpEndpoint)
+	if err != nil {
+		return err
+	}
+
+	defer func(udpLn *net.UDPConn) {
+		err := udpLn.Close()
+		if err != nil {
+			fmt.Println("Error during closing UDP: ", err)
+		}
+	}(udpLn)
+	c.connUDP = udpLn
 	c.acceptLoop()
 	select {
 	case <-c.quitch:
@@ -52,11 +68,12 @@ func (c *Client) Start() error {
 }
 
 func (c *Client) acceptLoop() {
-	go c.receiveMsg()
-	go c.SendMsg()
+	go c.receiveTCPMsg()
+	go c.sendMsg()
+	go c.receiveUDPMsg()
 }
 
-func (c *Client) SendMsg() error {
+func (c *Client) sendMsg() error {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
@@ -69,9 +86,11 @@ func (c *Client) SendMsg() error {
 				continue
 			} else if line == "U" {
 				fmt.Println("Sending UDP")
+				c.sendUDP()
+				continue
 			}
 			msg := c.hostName + ": " + line
-			_, err := c.conn.Write([]byte(msg))
+			_, err := c.connTCP.Write([]byte(msg))
 			if err != nil {
 				fmt.Println("Error during sending message from client: ", err)
 				return err
@@ -82,14 +101,15 @@ func (c *Client) SendMsg() error {
 	return nil
 }
 
-func (c *Client) receiveMsg() error {
+func (c *Client) receiveTCPMsg() error {
 	for {
 		select {
 		case <-c.quitch:
 			return nil
 		default:
+
 			buff := make([]byte, 2048)
-			n, err := c.conn.Read(buff)
+			n, err := c.connTCP.Read(buff)
 			if err != nil {
 				if err == io.EOF {
 					close(c.serverClosed)
@@ -106,13 +126,38 @@ func (c *Client) receiveMsg() error {
 	}
 }
 
-func (c *Client) sendUDP() error {
-	s, _ := net.ResolveUDPAddr("udp", c.serverAddr)
-	conn, err := net.DialUDP("udp", nil, s)
-	if err != nil {
-		fmt.Println("Error during sending UDP from ", c.hostName)
-		return err
+func (c *Client) receiveUDPMsg() error {
+	for {
+		select {
+		case <-c.quitch:
+			return nil
+		default:
+			buff := make([]byte, 2048)
+			//conn, _ := c.createUDPConn(c.serverAddr)
+			n, _, err := c.connUDP.ReadFromUDP(buff)
+			fmt.Println("essa")
+			if err != nil {
+				fmt.Println("Error during receiving UDP message: ", err)
+				continue
+			}
+			msg := buff[:n]
+			fmt.Printf("From %s\n", msg)
+		}
 	}
+}
+
+func (c *Client) createUDPConn(addr string) (*net.UDPConn, error) {
+	udpEndpoint, _ := net.ResolveUDPAddr("udp", addr)
+	conn, err := net.DialUDP("udp", nil, udpEndpoint)
+	if err != nil {
+		fmt.Println("Error while creating UDP connection ", addr)
+		return nil, err
+	}
+	return conn, nil
+}
+
+func (c *Client) sendUDP() error {
+	conn, err := c.createUDPConn(c.serverAddr)
 
 	defer func(conn *net.UDPConn) {
 		err := conn.Close()
@@ -120,5 +165,14 @@ func (c *Client) sendUDP() error {
 			return
 		}
 	}(conn)
+
+	fmt.Println(conn.LocalAddr())
+
+	asciiArt := "    /\\_____/\\\n   /  o   o  \\\n  ( ==  ^  == )\n   )         (\n  (           )\n ( (  )   (  ) )\n(__(__)___(__)__)"
+	_, err = conn.Write([]byte(asciiArt))
+	if err != nil {
+		fmt.Println("Error during sending message from client using UDP: ", err)
+		return err
+	}
 	return nil
 }
