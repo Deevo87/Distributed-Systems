@@ -43,13 +43,16 @@
         </div>
         <input type="submit" id="submit-button" value="Prześlij"><br><br>
     </form>
-    <p>Najlepszy kurs: <span id="best_price">{{ .BestPrice }}</span></p>
-    <p>Najgorszy kurs: <span id="worst_price">{{ .WorstPrice }}</span></p>
-    <p>Średni kurs: <span id="average_price">{{ .AveragePrice }}</span></p>
     {{ if .Success }}
+        <p>Najlepszy kurs: <span id="best_price">{{ .BestPrice }}</span></p>
+        <p>Najgorszy kurs: <span id="worst_price">{{ .WorstPrice }}</span></p>
+        <p>Średni kurs: <span id="average_price">{{ .AveragePrice }}</span></p>
         <p>Sprzedaż: <span id="selling"> {{ .Selling }}</span></p>
         <p>Zakup: <span id="buying">{{ .Buying }}</span></p>
         <p>Otrzymasz: <span id="result">{{ .Result }} {{ .Buying }}</span></p>
+    {{ end }}
+    {{ if not .Success }}
+        <p style="color: red;">Niepoprawny kod waluty!!! Wprowadź poprawny!!!</p>
     {{ end }}
 </div>
 

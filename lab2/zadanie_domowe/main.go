@@ -19,7 +19,12 @@ func currencyValues(r *gin.Engine) {
 			fmt.Println("Error: amount, currency1 and currency2 is required")
 			return
 		}
+		success := true
 		converter := NewCurrencyConverter(currency1, currency2, amount)
+		if converter.bestPrice == 0 && converter.averagePrice == 0 && converter.finalValue == 0 {
+			fmt.Println("Wrong input!!!")
+			success = false
+		}
 
 		c.HTML(200, "index.html", gin.H{
 			"BestPrice":    fmt.Sprintf("%.8f", converter.bestPrice),
@@ -28,7 +33,7 @@ func currencyValues(r *gin.Engine) {
 			"Result":       fmt.Sprintf("%.4f", converter.finalValue),
 			"Selling":      currency1,
 			"Buying":       currency2,
-			"Success":      true,
+			"Success":      success,
 		})
 	})
 }

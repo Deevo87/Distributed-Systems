@@ -10,8 +10,6 @@ import (
 	"sync"
 )
 
-const key1 = "fxr_live_4cb29841efcfe656133344f279f7e40b7570"
-
 type CurrencyConverter struct {
 	convertFrom  string
 	convertTo    string
@@ -42,14 +40,8 @@ func NewCurrencyConverter(convertFrom, convertTo, amount string) *CurrencyConver
 	go c.frankfurterApiConv()
 	go c.applyChanges()
 
-	//go func() {
 	c.wg.Wait()
 	close(c.doneChan)
-	//}()
-
-	//<-c.doneChan
-	fmt.Println("Przesyłam gotowy produkt")
-	fmt.Println(c.bestPrice, c.worstPrice, c.averagePrice, c.finalValue)
 
 	return c
 }
@@ -60,7 +52,6 @@ func (c *CurrencyConverter) applyChanges() {
 		case change := <-c.changeChan:
 			change(c)
 			c.wg.Done()
-			fmt.Println("kończę gorourine")
 		case <-c.doneChan:
 			return
 		}
