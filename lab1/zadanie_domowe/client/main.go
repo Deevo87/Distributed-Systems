@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	client := client_back.NewClient("client1", ":8080")
+	client := client_back.NewClient("client3", ":8080")
 	err := client.Start()
 	if err != nil {
 		return
