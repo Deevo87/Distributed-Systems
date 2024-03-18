@@ -61,6 +61,7 @@ func sendTradeInfo(r *gin.Engine) {
 }
 
 func main() {
+	apiKeys = append(apiKeys, "497ad690-3aaf-4bac-aeec-6507ebc19e1f")
 	r := gin.Default()
 	sendApiKey(r)
 	sendTradeInfo(r)

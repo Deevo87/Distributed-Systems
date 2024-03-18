@@ -104,9 +104,9 @@ func (c *CurrencyConverter) fxRatesApiConv() (float64, float64, error) {
 
 	body, _ := ioutil.ReadAll(res.Body)
 	var responseData struct {
-		Result float64 `json: "result"`
+		Result float64 `json:"result"`
 		Info   struct {
-			Rate float64 `json: "rate"`
+			Rate float64 `json:"rate"`
 		}
 	}
 	fmt.Println(string(body))
@@ -163,7 +163,7 @@ func (c *CurrencyConverter) LatestApi1(curr1, curr2 string) map[string]float64 {
 	body, _ := ioutil.ReadAll(res.Body)
 
 	var responseData struct {
-		Rates map[string]float64 `json: "rates"`
+		Rates map[string]float64 `json:"rates"`
 	}
 
 	err := json.Unmarshal(body, &responseData)
