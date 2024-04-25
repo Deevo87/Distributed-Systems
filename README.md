@@ -20,7 +20,7 @@ This repository contains code from distributed systems labs, a class I have at A
    - REST API sends resposnes in JSON
    - each call from the client is asynchronous
    - request to external APIs are multi-threded, every call has it's own thread, for communication between these calls I use channels
-   - there is simple security mechanism - before making a call to the API you need to obtain the API key (localhost)([localhost](http://localhost:4000/getApiKey))
+   - there is simple security mechanism - before making a call to the API you need to obtain the API key ([localhost](http://localhost:4000/getApiKey))
    - common http errors are handled (client is receiving appropriate http status)
    - to create this application I used the gin framework
 
