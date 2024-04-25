@@ -1,4 +1,4 @@
-<h1>Distibuted Systems</h1>
+<h1>Distributed Systems</h1>
 
 This repository contains code from distributed systems labs, a class I have at AGH.
 
