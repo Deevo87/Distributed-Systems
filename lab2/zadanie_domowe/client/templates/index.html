@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>lab2</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            text-align: center;
+        }
+
+        .inputs {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .labels {
+            padding: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <form id="exchange-form" class="exchange-form" action="/convert" method="GET">
+        <p>Sprzedaż waluty</p>
+        <label for="amount" class="labels">Ilość: </label><br>
+        <input type="text" id="amount" name="amount" pattern="[0-9]+([.,][0-9]+)?" title="Tylko liczby zmiennoprzecinkowe są dozwolone" required><br><br>
+        <div class="inputs">
+            <label for="curr1" class="labels">Z:</label><br>
+            <input type="text" id="curr1" name="curr1" pattern="[A-Za-zżźćńółęąśŻŹĆĄŚĘŁÓŃ]+" title="Tylko litery są dozwolone" required><br><br>
+            <label for="curr2" class="labels">Na: </label><br>
+            <input type="text" id="curr2" name="curr2" pattern="[A-Za-zżźćńółęąśŻŹĆĄŚĘŁÓŃ]+" title="Tylko litery są dozwolone" required><br><br>
+        </div>
+        <input type="submit" id="submit-button" value="Prześlij"><br><br>
+    </form>
+    {{ if .Success }}
+        <p>Najlepszy kurs: <span id="best_price">{{ .BestPrice }}</span></p>
+        <p>Najgorszy kurs: <span id="worst_price">{{ .WorstPrice }}</span></p>
+        <p>Średni kurs: <span id="average_price">{{ .AveragePrice }}</span></p>
+        <p>Sprzedaż: <span id="selling"> {{ .Selling }}</span></p>
+        <p>Zakup: <span id="buying">{{ .Buying }}</span></p>
+        <p>Otrzymasz: <span id="result">{{ .Result }} {{ .Buying }}</span></p>
+    {{ end }}
+</div>
+
+</body>
+</html>
