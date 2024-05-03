@@ -1,0 +1,27 @@
+rolety - całe działają
+smart blinds: open blinds
+smart blinds: close blinds
+smart blinds: set angle --args=20.00
+smart blinds: set window coverage --args=90
+
+
+rolety z alarmem
+alarm triggered blinds: activate alarm
+alarm triggered blinds: deactivate alarm
+
+
+rolety z rozkładem dnia
+daily schedule blinds: set blinds schedule --args=1, 10, 0, 20, 0 | 2, 10, 0, 20, 0 | 3, 10, 0, 20, 0 | 4, 10, 0, 20, 0 | 5, 10, 0, 20, 0 | 6, 10, 0, 20, 0 | 7, 10, 0, 20, 0
+daily schedule blinds: change daily schedule --args=3, 12, 30, 18, 45
+
+
+termostat
+thermostat: set temperature --args=30.00
+thermostat: check temperature
+
+
+coffee maker
+coffee maker: set schedule --args=1 || 8, 10 || 14, 45 | 2 || 8, 10 | 4 || 9, 30 | 5 || 7, 30 || 12, 30
+coffee maker: add coffee time --args=2, 16, 40
+coffee maker: clear schedule
+coffee maker: clear day schedule --args=2
