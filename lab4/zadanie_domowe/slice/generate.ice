@@ -6,13 +6,22 @@ module SmartHome
         Working
     };
 
+    enum Day {
+        Monday,
+        Tuesday,
+        Wednesday,
+        Thursday,
+        Friday,
+        Saturday,
+        Sunday
+    };
+
     exception AlreadyWorkingError {};
-    exception DeviceFailureError {};
     interface Device
     {
-        idempotent Info setInfo(Info info) throws AlreadyWorkingError;
-        idempotent Info getInfo();
-        idempotent void isFailure() throws DeviceFailureError;
+        idempotent void setInfo(Info info) throws AlreadyWorkingError;
+        idempotent bool isWorking();
+        idempotent bool isFailure();
     };
 
     exception TemperatureOutOfRangeError {};
@@ -24,7 +33,7 @@ module SmartHome
 
     struct DaySchedule
     {
-        string dayOfWeek;
+        Day dayOfWeek;
         int openHour;
         int openMinutes;
         int closeHour;
@@ -39,28 +48,37 @@ module SmartHome
     };
     sequence<CoffeeTime> CoffeeTimes;
 
+    struct CoffeeDay {
+        Day dayOfWeek;
+        CoffeeTimes coffeeTimes;
+    };
+    sequence<CoffeeDay> CoffeeWeek;
+
     exception TooManyShedulesError {};
     exception HoursOutOfRangeError {};
     exception MinutesOutOffRangeError {};
     interface CoffeeMaker extends Device
     {
         void brewCoffee();
-        void setSchedule(CoffeeTimes coffeeTimes) throws TooManyShedulesError, HoursOutOfRangeError, MinutesOutOffRangeError;
-        void changeDaySchedule(CoffeeTime coffeeTime) throws HoursOutOfRangeError, MinutesOutOffRangeError;
+        void setSchedule(CoffeeWeek coffeeWeek) throws HoursOutOfRangeError, MinutesOutOffRangeError, TooManyShedulesError;
+        void addCoffeeTime(CoffeeTime coffeeTime, Day day) throws HoursOutOfRangeError, MinutesOutOffRangeError;
+        void clearDaySchedule(Day day);
+        void clearSchedule();
     };
 
     exception AngleOutOfRangeError {};
     exception CoverageOutOfRangeError {};
-    interface SmartBlind extends Device
+    exception AlreadyOpenedError {};
+    exception AlreadyClosedError {};
+    interface SmartBlinds extends Device
     {
-        void openBlind();
-        void closeBlind();
+        void openBlinds() throws AlreadyOpenedError;
+        void closeBlinds() throws AlreadyClosedError;
         void setAngle(double angle) throws AngleOutOfRangeError;
-        void setFullWindowCoverage(bool fullCoverage) throws CoverageOutOfRangeError;
-        void setCustomWindowCoverage(double coverage);
+        void setCustomWindowCoverage(int coverage) throws CoverageOutOfRangeError;
     };
 
-    interface DailyScheduleBlind extends SmartBlind
+    interface DailyScheduleBlinds extends SmartBlinds
     {
         void changeDaySchedule(DaySchedule daySchedule) throws HoursOutOfRangeError, MinutesOutOffRangeError;
         void setSchedule(Schedule schedule) throws TooManyShedulesError, HoursOutOfRangeError, MinutesOutOffRangeError;
@@ -68,7 +86,7 @@ module SmartHome
 
     exception AlarmAlreadyOnError {};
     exception AlarmAlreadyOffError {};
-    interface AlarmTriggeredBlind extends SmartBlind
+    interface AlarmTriggeredBlinds extends SmartBlinds
     {
         void activateAlarmMode() throws AlarmAlreadyOnError;
         void deactivateAlarmMode() throws AlarmAlreadyOffError;

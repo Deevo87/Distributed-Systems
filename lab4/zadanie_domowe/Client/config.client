@@ -1,0 +1,5 @@
+Thermostat.Proxy=Thermostat/Thermostat:tcp -h 127.0.0.11 -p 10011 : udp -h 127.0.0.11 -p 10011
+CoffeeMaker.Proxy=CoffeeMaker/CoffeeMaker:tcp -h 127.0.0.11 -p 10011 : udp -h 127.0.0.11 -p 10011
+SmartBlinds.Proxy=SmartBlinds/SmartBlinds:tcp -h 127.0.0.11 -p 10011 : udp -h 127.0.0.11 -p 10011
+DailyScheduleBlinds.Proxy=DailyScheduleBlinds/DailyScheduleBlinds:tcp -h 127.0.0.11 -p 10011 : udp -h 127.0.0.11 -p 10011
+AlarmTriggeredBlinds.Proxy=AlarmTriggeredBlinds/AlarmTriggeredBlinds:tcp -h 127.0.0.11 -p 10011 : udp -h 127.0.0.11 -p 10011

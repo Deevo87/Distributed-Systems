@@ -12,7 +12,6 @@ target/
 *.iws
 *.iml
 *.ipr
-*.xml
 
 ### Eclipse ###
 .apt_generated
@@ -39,3 +38,5 @@ build/
 ### Mac OS ###
 .DS_Store
 /src/main/java/SmartHome/
+/SmartHome/
+/generate_ice.py
