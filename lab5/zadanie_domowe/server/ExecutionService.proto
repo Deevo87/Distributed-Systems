@@ -1,0 +1,21 @@
+syntax = "proto3";
+package org.Executors;
+option java_multiple_files = true;
+option go_package = "/dynamic_executors";
+
+
+message ExecutionRequest {
+  string className = 1;
+  string methodName = 2;
+  string jarLocation = 3;
+  string data = 4;
+}
+
+message ExecutionResponse {
+  string errCode = 1;
+  string data = 2;
+}
+
+service ExecutionService {
+  rpc execute(ExecutionRequest) returns (ExecutionResponse);
+}
