@@ -36,14 +36,16 @@ func main() {
 		}
 
 		switch executableName {
-		case "greet":
-			execute(client, "JaredProject-1.0-SNAPSHOT.jar", "org.solution.Greeter", "greet", "Rafal")
 		case "add":
 			execute(client, "JaredProject-1.0-SNAPSHOT.jar", "org.solution.Calculator", "add", "[1, 2, -3, 123]")
 		case "average":
 			execute(client, "JaredProject-1.0-SNAPSHOT.jar", "org.solution.Calculator", "average", "[10, 10, 10, 10, 10]")
 		case "power":
 			execute(client, "JaredProject-1.0-SNAPSHOT.jar", "org.solution.Calculator", "power", "[1, 2, 3, 4, 5]")
+		case "toUpper":
+			execute(client, "JaredProject-1.0-SNAPSHOT.jar", "org.solution.Essa", "toUpper", "only small characters")
+		case "hello":
+			execute(client, "JaredProject-1.0-SNAPSHOT.jar", "org.solution.Essa", "hello", "Pablo Emilio Escobar Gaviria")
 		case "quit":
 			fmt.Println("Quitting")
 			return

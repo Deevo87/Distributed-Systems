@@ -44,6 +44,7 @@ public class ExecutionServiceImpl extends ExecutionServiceGrpc.ExecutionServiceI
             try {
                 execRes = this.getExecutionResult(c, method, request.getData(), responseBuilder);
             } catch (Exception e) {
+                System.out.println(method);
                 System.out.println("Error executing request: " + request);
                 throw new RuntimeException(e);
             }
@@ -56,23 +57,25 @@ public class ExecutionServiceImpl extends ExecutionServiceGrpc.ExecutionServiceI
         responseObserver.onCompleted();
     }
 
-    private Object getExecutionResult(Class clazz, Method method, String data, ExecutionResponse.Builder responseBuilder) throws Exception {
+    private Object getExecutionResult(Class c, Method method, String data, ExecutionResponse.Builder responseBuilder) throws Exception {
         Object result = null;
-        Object object = clazz.getDeclaredConstructor().newInstance();
-        Class[] parameterTypes = method.getParameterTypes();
-        if (1 == parameterTypes.length) {
-            result = method.invoke(object, gson.fromJson(data, parameterTypes[0]));
-        } else if (0 == parameterTypes.length) {
+        Object object = c.getDeclaredConstructor().newInstance();
+        Class[] pTypes = method.getParameterTypes();
+        if (1 == pTypes.length) {
+            result = method.invoke(object, gson.fromJson(data, pTypes[0]));
+        } else if (0 == pTypes.length) {
             result = method.invoke(object);
         } else {
-            System.out.println("Wrong number of parameters: " + parameterTypes.length);
+            System.out.println("Wrong number of parameters: " + pTypes.length);
         }
         return result;
     }
 
     private Method getMethod(Class c, String methodName, ExecutionResponse.Builder responseBuilder) {
         Method[] methods = c.getDeclaredMethods();
+        System.out.println("Methods found: " + methods.length);
         for (Method method : methods) {
+            System.out.println(method.getName());
             if (method.getName().equals(methodName)) {
                 Class[] pTypes = method.getParameterTypes();
                 System.out.println("Method found: " + methodName);
