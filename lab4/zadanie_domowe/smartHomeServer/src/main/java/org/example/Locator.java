@@ -19,8 +19,7 @@ public class Locator implements ServantLocator {
     public LocateResult locate(Current current) throws UserException {
         String servant = current.id.name;
         ObjectAdapter adapter = current.adapter;
-//        if (getServantId(servant).equals(this.id + 10)) {
-//            String servantName = servant.substring(0, getFirstServantIdIndex(servant));
+
         this.servants.add(servant);
         switch (servant) {
             case "CoffeeMaker":
@@ -59,18 +58,6 @@ public class Locator implements ServantLocator {
     @Override
     public void deactivate(String s) {
         System.out.println("Server deactivated: " + s);
-    }
-
-    private String getServantId(String servantName) {
-        return servantName.substring(getFirstServantIdIndex(servantName));
-    }
-
-    private int getFirstServantIdIndex(String servantName) {
-        int i = servantName.length();
-        while (i > 0 && Character.isDigit(servantName.charAt(i - 1))) {
-            i--;
-        }
-        return i;
     }
 
     public void servantToString() {

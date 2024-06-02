@@ -8,7 +8,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "client/generated/dynamic_executors" // Import your generated proto package
+	pb "client/generated/dynamic_executors"
 )
 
 const (
@@ -17,17 +17,14 @@ const (
 )
 
 func main() {
-	// Set up a connection to the server
 	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", hostname, port), grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect: %v", err)
 	}
 	defer conn.Close()
 
-	// Create a client instance
 	client := pb.NewExecutionServiceClient(conn)
 
-	// Input loop
 	for {
 		fmt.Print("> ")
 		var executableName string
